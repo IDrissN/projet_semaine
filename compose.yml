@@ -15,6 +15,7 @@ volumes :
 services:
   database:
     image: mysql
+    
     environment:
       MYSQL_ROOT_PASSWORD_FILE: /run/secrets/mysql_root_password
       MYSQL_DATABASE: semainedb
