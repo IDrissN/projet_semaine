@@ -33,7 +33,7 @@ services:
     image: python:3.8
     working_dir: /usr/src/app
     volumes:
-      - ./backend:/usr/src/app
+      - ./myapp:/usr/src/app
     environment:
       DATABASE_HOST: database
       DATABASE_USER: semaineuser
@@ -55,7 +55,7 @@ services:
     depends_on:
       - backend
     volumes:
-      - ./django:/usr/src/app
+      - ./myapp/templates:/usr/src/app
     networks:
       - app-network
  
