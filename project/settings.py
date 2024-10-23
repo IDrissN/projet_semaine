@@ -82,11 +82,11 @@ WSGI_APPLICATION = 'project.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'semainedb',   
-        'USER': 'root',                
-        'PASSWORD': 'strong_root_password',             
-        'HOST': 'localhost',   
-        'PORT': '8081'
+        'NAME': os.environ.get('MYSQL_DATABASE', 'db_name'),
+        'USER': os.environ.get('MYSQL_USER', 'db_user'),
+        'PASSWORD': os.environ.get('MYSQL_PASSWORD', 'db_password'),
+        'HOST': os.environ.get('MYSQL_HOST', 'db'),
+        'PORT': os.environ.get('MYSQL_PORT', '3306'),
     }
 }
 
@@ -134,3 +134,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 DATE_FORMAT = "d/m/Y"
+
+
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
