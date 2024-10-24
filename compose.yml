@@ -30,7 +30,8 @@ services:
   database:
     image: mysql
     environment:
-      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/mysql_root_password
+      #MYSQL_ROOT_PASSWORD_FILE: /run/secrets/mysql_root_password
+      MYSQL_ROOT_PASSWORD: strong_root_password
       MYSQL_DATABASE: semainedb
       MYSQL_USER: semaineuser
       MYSQL_PASSWORD_FILE: /run/secrets/mysql_user_password
@@ -54,11 +55,13 @@ services:
       context: ./myapp
       dockerfile: dockerfile
     environment:
-      DJANGO_SETTINGS_MODULE: project.settings  # Ajoutez cette ligne
+      DJANGO_SETTINGS_MODULE: project.settings 
       DATABASE_HOST: database
       DATABASE_USER: semaineuser
       DATABASE_NAME: semainedb
-      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/mysql_root_password  
+      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/mysql_root_password 
+    ports:
+      - "8000:8000"
     secrets:
       - mysql_root_password  
 
@@ -67,8 +70,7 @@ services:
 
   front:
     image: tiangolo/uwsgi-nginx:python3.8
-    ports:
-      - "8000:8000"
+
     volumes:
       - ./myapp/templates:/usr/src/app
     networks:

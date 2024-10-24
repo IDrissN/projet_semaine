@@ -85,7 +85,7 @@ DATABASES = {
         'NAME': 'semainedb',   
         'USER': 'root',                
         'PASSWORD': 'strong_root_password',             
-        'HOST': '127.0.0.1',   
+        'HOST': 'database',   
         'PORT': '3306'
     }
 }
