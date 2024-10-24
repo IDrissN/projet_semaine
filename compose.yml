@@ -13,53 +13,6 @@ volumes :
   db_data:
     
 services:
-  database:
-    image: mysql
-    environment:
-      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/mysql_root_password
-      MYSQL_DATABASE: semainedb
-      MYSQL_USER: semaineuser
-      MYSQL_PASSWORD_FILE: /run/secrets/mysql_user_password
-    secrets:
-      - mysql_root_password
-      - mysql_user_password
-    volumes:
-      - db_data:/var/lib/mysql
-    networks:
-      - app-network
-    restart: always
-
-  backend:
-    image: python:3.8
-    working_dir: /usr/src/app
-    volumes:
-      - ./backend:/usr/src/app
-    environment:
-      DATABASE_HOST: database
-      DATABASE_USER: semaineuser
-      DATABASE_PASSWORD_FILE: /run/secrets/mysql_user_password
-      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/mysql_root_password
-      DATABASE_NAME: semainedb
-    depends_on:
-      - database
-    secrets:
-      - mysql_user_password
-    networks:
-      - app-network
-   
-      
-  front:
-    image: tiangolo/uwsgi-nginx:python3.8
-    ports:
-      - "8000:8000"
-    depends_on:
-      - backend
-    volumes:
-      - ./django:/usr/src/app
-    networks:
-      - app-network
- 
-      
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     restart: always
@@ -74,6 +27,58 @@ services:
     networks:
       - app-network
 
+  database:
+    image: mysql
+    
+    environment:
+      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/mysql_root_password
+      MYSQL_DATABASE: semainedb
+      MYSQL_USER: semaineuser
+      MYSQL_PASSWORD_FILE: /run/secrets/mysql_user_password
+    secrets:
+      - mysql_root_password
+      - mysql_user_password
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - app-network
+    restart: always
+    ports:
+      - "3306:3306"
+
+  backend:
+    image: python:3.8
+    working_dir: /usr/src/app
+    volumes:
+      - ./myapp:/usr/src/app
+    build:
+      context: ./myapp
+      dockerfile: dockerfile
+    environment:
+      DATABASE_HOST: database
+      DATABASE_USER: semaineuser
+      DATABASE_PASSWORD_FILE: /run/secrets/mysql_user_password
+      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/mysql_root_password
+      DATABASE_NAME: semainedb
+    depends_on:
+      - database
+    secrets:
+      - mysql_user_password
+    networks:
+      - app-network
+
+    
+  front:
+    image: tiangolo/uwsgi-nginx:python3.8
+    ports:
+      - "8000:8000"
+    depends_on:
+      - backend
+    volumes:
+      - ./myapp/templates:/usr/src/app
+    networks:
+      - app-network
+ 
 
     
     
