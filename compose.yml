@@ -20,16 +20,16 @@ services:
       - "8081:80"
     environment:
       PMA_HOST: database
-      MYSQL_ROOT_PASSWORD_FILE: mysql_root_password
-
+      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/mysql_root_password
+    secrets :
+      - mysql_root_password
     depends_on:
       - database
     networks:
       - app-network
 
   database:
-    image: mysql
-    
+    image: mysql    
     environment:
       MYSQL_ROOT_PASSWORD_FILE: /run/secrets/mysql_root_password
       MYSQL_DATABASE: semainedb
@@ -57,13 +57,10 @@ services:
     environment:
       DATABASE_HOST: database
       DATABASE_USER: semaineuser
-      DATABASE_PASSWORD_FILE: /run/secrets/mysql_user_password
-      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/mysql_root_password
+      MYSQL_ROOT_PASSWORD: "strong_root_password"
       DATABASE_NAME: semainedb
     depends_on:
-      - database
-    secrets:
-      - mysql_user_password
+      - phpmyadmin
     networks:
       - app-network
 
