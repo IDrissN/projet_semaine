@@ -12,8 +12,30 @@ volumes:
   db_data:
 
 services:
+
+  database:
+      image: mysql
+      environment:
+        #MYSQL_ROOT_PASSWORD_FILE: /run/secrets/mysql_root_password
+        MYSQL_ROOT_PASSWORD: strong_root_password
+        MYSQL_DATABASE: semainedb
+        MYSQL_USER: semaineuser
+        MYSQL_PASSWORD_FILE: /run/secrets/mysql_user_password
+      secrets:
+        - mysql_root_password
+        - mysql_user_password
+      volumes:
+        - db_data:/var/lib/mysql
+      networks:
+        - app-network
+      ports:
+        - "3306:3306"
+      restart: always 
+
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
+    depends_on:
+      - database
     restart: always
     ports:
       - "8081:80"
@@ -22,32 +44,13 @@ services:
       MYSQL_ROOT_PASSWORD_FILE: /run/secrets/mysql_root_password
     secrets:
       - mysql_root_password
-    depends_on:
-      - database
     networks:
       - app-network
-
-  database:
-    image: mysql
-    environment:
-      #MYSQL_ROOT_PASSWORD_FILE: /run/secrets/mysql_root_password
-      MYSQL_ROOT_PASSWORD: strong_root_password
-      MYSQL_DATABASE: semainedb
-      MYSQL_USER: semaineuser
-      MYSQL_PASSWORD_FILE: /run/secrets/mysql_user_password
-    secrets:
-      - mysql_root_password
-      - mysql_user_password
-    volumes:
-      - db_data:/var/lib/mysql
-    networks:
-      - app-network
-    restart: always
-    ports:
-      - "3306:3306"
-
+  
   backend:
     image: python:3.12.0
+    depends_on:
+      - database
     working_dir: /usr/src/app
     volumes:
       - ./:/usr/src/app
@@ -64,14 +67,6 @@ services:
       - "8000:8000"
     secrets:
       - mysql_root_password  
-
     networks:
       - app-network
-
-  front:
-    image: tiangolo/uwsgi-nginx:python3.8
-
-    volumes:
-      - ./myapp/templates:/usr/src/app
-    networks:
-      - app-network
+    restart: always
