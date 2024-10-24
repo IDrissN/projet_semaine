@@ -1,4 +1,3 @@
-
 secrets: 
   mysql_root_password:
     file: ./secrets/mysql_root_password.txt
@@ -9,9 +8,9 @@ networks:
   app-network:
     driver: bridge
 
-volumes : 
+volumes: 
   db_data:
-    
+
 services:
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
@@ -21,7 +20,7 @@ services:
     environment:
       PMA_HOST: database
       MYSQL_ROOT_PASSWORD_FILE: /run/secrets/mysql_root_password
-    secrets :
+    secrets:
       - mysql_root_password
     depends_on:
       - database
@@ -29,7 +28,7 @@ services:
       - app-network
 
   database:
-    image: mysql    
+    image: mysql
     environment:
       MYSQL_ROOT_PASSWORD_FILE: /run/secrets/mysql_root_password
       MYSQL_DATABASE: semainedb
@@ -47,35 +46,30 @@ services:
       - "3306:3306"
 
   backend:
-    image: python:3.8
+    image: python:3.12.0
     working_dir: /usr/src/app
     volumes:
-      - ./myapp:/usr/src/app
+      - ./:/usr/src/app
     build:
       context: ./myapp
       dockerfile: dockerfile
     environment:
+      DJANGO_SETTINGS_MODULE: project.settings  # Ajoutez cette ligne
       DATABASE_HOST: database
       DATABASE_USER: semaineuser
-      MYSQL_ROOT_PASSWORD: "strong_root_password"
       DATABASE_NAME: semainedb
-    depends_on:
-      - phpmyadmin
+      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/mysql_root_password  
+    secrets:
+      - mysql_root_password  
+
     networks:
       - app-network
 
-    
   front:
     image: tiangolo/uwsgi-nginx:python3.8
     ports:
       - "8000:8000"
-    depends_on:
-      - backend
     volumes:
       - ./myapp/templates:/usr/src/app
     networks:
       - app-network
- 
-
-    
-    
