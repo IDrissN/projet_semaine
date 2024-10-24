@@ -31,6 +31,12 @@ services:
       ports:
         - "3306:3306"
       restart: always 
+      healthcheck:
+        test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+        interval: 10s
+        retries: 5
+        start_period: 30s
+        timeout: 5s
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
@@ -50,7 +56,8 @@ services:
   backend:
     image: python:3.12.0
     depends_on:
-      - database
+      database:
+        condition: service_healthy
     working_dir: /usr/src/app
     volumes:
       - ./:/usr/src/app
