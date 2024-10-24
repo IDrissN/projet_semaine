@@ -9,8 +9,8 @@
         <form class="jumbotron" method="post">
             {% csrf_token %}
             <h2>Voulez-vous vraiment supprimer la tâche <span class="text-danger">{{obj.title}}</span>? </h2>
-            <input type="submit" value="OUI" class="btn btn-danger">
-            <button class="btn btn-success"><a href="{% url 'show_url' %}">Non</a></button>
+            <input type="submit" value="OUI" class="btn">
+            <button class="btn"><a href="{% url 'show_url' %}">Non</a></button>
         </form>
     </div>
 {% endblock %}

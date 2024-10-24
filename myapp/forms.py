@@ -6,7 +6,7 @@ class TodoForm(forms.ModelForm):
         model = Todo
         fields = '__all__'
 
-        label = {
+        labels = {
         "title" : "Titre",
         "todo" : "Description",
         }
