@@ -1,0 +1,5 @@
+pip
+django
+mysqlclient
+crispy-bootstrap5
+django-crispy-forms

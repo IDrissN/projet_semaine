@@ -13,6 +13,20 @@ volumes :
   db_data:
     
 services:
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    restart: always
+    ports:
+      - "8081:80"
+    environment:
+      PMA_HOST: database
+      MYSQL_ROOT_PASSWORD_FILE: mysql_root_password
+
+    depends_on:
+      - database
+    networks:
+      - app-network
+
   database:
     image: mysql
     
@@ -37,6 +51,9 @@ services:
     working_dir: /usr/src/app
     volumes:
       - ./myapp:/usr/src/app
+    build:
+      context: ./myapp
+      dockerfile: dockerfile
     environment:
       DATABASE_HOST: database
       DATABASE_USER: semaineuser
@@ -49,8 +66,8 @@ services:
       - mysql_user_password
     networks:
       - app-network
-   
-      
+
+    
   front:
     image: tiangolo/uwsgi-nginx:python3.8
     ports:
@@ -62,21 +79,6 @@ services:
     networks:
       - app-network
  
-      
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin
-    restart: always
-    ports:
-      - "8081:80"
-    environment:
-      PMA_HOST: database
-      MYSQL_ROOT_PASSWORD_FILE: mysql_root_password
-
-    depends_on:
-      - database
-    networks:
-      - app-network
-
 
     
     
